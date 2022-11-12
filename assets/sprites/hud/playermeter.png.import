@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/collision.png-d221e996efad9eb5b0968ce2edba3b36.stex"
+path="res://.import/playermeter.png-c3735e1862462858d0b61f769cdcfe1f.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/tilesets/collision/collision.png"
-dest_files=[ "res://.import/collision.png-d221e996efad9eb5b0968ce2edba3b36.stex" ]
+source_file="res://assets/sprites/hud/playermeter.png"
+dest_files=[ "res://.import/playermeter.png-c3735e1862462858d0b61f769cdcfe1f.stex" ]
 
 [params]
 

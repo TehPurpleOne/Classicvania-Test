@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/collision.png-d221e996efad9eb5b0968ce2edba3b36.stex"
+path="res://.import/meterback.png-916fb83f1d17ab46272493af7ca3460b.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/tilesets/collision/collision.png"
-dest_files=[ "res://.import/collision.png-d221e996efad9eb5b0968ce2edba3b36.stex" ]
+source_file="res://assets/sprites/hud/meterback.png"
+dest_files=[ "res://.import/meterback.png-916fb83f1d17ab46272493af7ca3460b.stex" ]
 
 [params]
 
