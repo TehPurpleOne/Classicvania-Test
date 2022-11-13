@@ -1,21 +1,20 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://assets/tilesets/collision/collision.tres" type="TileSet" id=1]
+[ext_resource path="res://scenes/game/ui/HUD.tscn" type="PackedScene" id=2]
 
 [node name="GameWorld" type="Node"]
 
 [node name="back" type="CanvasLayer" parent="."]
-layer = -1
-visible = false
+layer = 0
 
-[node name="ColorRect" type="ColorRect" parent="back"]
+[node name="back" type="ColorRect" parent="back"]
 margin_right = 256.0
 margin_bottom = 240.0
 color = Color( 0, 0, 0, 1 )
 
-[node name="collision" type="Control" parent="."]
-margin_right = 40.0
-margin_bottom = 40.0
+[node name="collision" type="CanvasLayer" parent="."]
+follow_viewport_enable = true
 
 [node name="map" type="TileMap" parent="collision"]
 tile_set = ExtResource( 1 )
@@ -23,4 +22,15 @@ cell_size = Vector2( 16, 16 )
 format = 1
 tile_data = PoolIntArray( 327680, 0, 0, 327681, 0, 0, 327682, 0, 0, 327683, 0, 0, 327684, 0, 0, 327685, 0, 0, 327686, 0, 0, 327687, 4, 0, 393224, 4, 0, 458761, 4, 0, 524298, 4, 0, 589835, 4, 0, 655370, 0, 0, 655371, 1, 0, 655372, 0, 0, 655373, 0, 0, 655374, 0, 0, 720906, 3, 0, 786441, 3, 0, 851968, 0, 0, 851969, 0, 0, 851970, 0, 0, 851971, 0, 0, 851972, 0, 0, 851973, 0, 0, 851974, 0, 0, 851975, 0, 0, 851976, 0, 0, 851977, 0, 0, 851978, 0, 0, 851979, 0, 0, 851980, 0, 0, 851981, 0, 0, 851982, 0, 0, 851983, 0, 0, 851984, 0, 0, 851985, 0, 0, 851986, 0, 0, 851987, 0, 0, 851988, 0, 0, 851989, 0, 0, 851990, 0, 0, 851991, 0, 0, 851992, 0, 0, 851993, 0, 0, 851994, 0, 0, 851995, 0, 0, 917504, 0, 0, 917505, 0, 0, 917506, 0, 0, 917507, 0, 0, 917508, 0, 0, 917509, 0, 0, 917510, 0, 0, 917511, 0, 0, 917512, 0, 0, 917513, 0, 0, 917514, 0, 0, 917515, 0, 0, 917516, 0, 0, 917517, 0, 0, 917518, 0, 0, 917519, 0, 0, 917520, 0, 0, 917521, 0, 0, 917522, 0, 0, 917523, 0, 0, 917524, 0, 0, 917525, 0, 0, 917526, 0, 0, 917527, 0, 0, 917528, 0, 0, 917529, 0, 0, 917530, 0, 0, 917531, 0, 0 )
 
+[node name="background" type="CanvasLayer" parent="."]
+layer = 2
+follow_viewport_enable = true
+
+[node name="object" type="CanvasLayer" parent="."]
+layer = 3
+follow_viewport_enable = true
+
 [node name="hud" type="CanvasLayer" parent="."]
+layer = 4
+
+[node name="HUD" parent="hud" instance=ExtResource( 2 )]

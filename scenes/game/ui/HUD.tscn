@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://assets/sprites/hud/heart.png" type="Texture" id=1]
 [ext_resource path="res://assets/sprites/hud/bossmeter.png" type="Texture" id=2]
@@ -6,6 +6,7 @@
 [ext_resource path="res://assets/fonts/gameFont.tres" type="DynamicFont" id=4]
 [ext_resource path="res://assets/sprites/hud/playermeter.png" type="Texture" id=5]
 [ext_resource path="res://assets/sprites/hud/meterback.png" type="Texture" id=6]
+[ext_resource path="res://assets/sprites/hud/shotmod.png" type="Texture" id=7]
 
 [node name="HUD" type="Node2D"]
 
@@ -92,3 +93,8 @@ texture = ExtResource( 1 )
 position = Vector2( 144, 28 )
 texture = ExtResource( 3 )
 hframes = 6
+
+[node name="Shotmod" type="Sprite" parent="."]
+position = Vector2( 216, 25 )
+texture = ExtResource( 7 )
+hframes = 3
