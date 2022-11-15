@@ -21,9 +21,9 @@ public class InputManager : Node
 
         // Directional input are mapped to a vector for both tapping the button and holding.
         dirTap.x = Convert.ToInt32(Input.IsActionJustPressed("right")) - Convert.ToInt32(Input.IsActionJustPressed("left"));
-        dirTap.y = Convert.ToInt32(Input.IsActionJustPressed("up")) - Convert.ToInt32(Input.IsActionJustPressed("down"));
+        dirTap.y = Convert.ToInt32(Input.IsActionJustPressed("down")) - Convert.ToInt32(Input.IsActionJustPressed("up"));
         dirHold.x = Convert.ToInt32(Input.IsActionPressed("right")) - Convert.ToInt32(Input.IsActionPressed("left"));
-        dirHold.y = Convert.ToInt32(Input.IsActionPressed("up")) - Convert.ToInt32(Input.IsActionPressed("down"));
+        dirHold.y = Convert.ToInt32(Input.IsActionPressed("down")) - Convert.ToInt32(Input.IsActionPressed("up"));
 
         // Finally, match the other flags to the appropriate input. It's not necessary to have hold values for Start and Select.
         bTap = Input.IsActionJustPressed("b");

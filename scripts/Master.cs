@@ -22,7 +22,7 @@ public class Master : Node
 
     public void loadWorld() {
         // This is a simple scene switch between the title screen and the game world. I highly recommend not using this method in production.
-        Node2D title = (Node2D)GetChild(0);
+        Title title = (Title)GetChild(0);
         title.QueueFree();
 
         var newWorld = (GameWorld)world.Instance();

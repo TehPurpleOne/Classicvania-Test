@@ -7,3 +7,12 @@ D:\Classicvania-Test\.mono\temp\obj\Debug\Classicvania Test.AssemblyInfo.cs
 D:\Classicvania-Test\.mono\temp\obj\Debug\Classicvania Test.csproj.CoreCompileInputs.cache
 D:\Classicvania-Test\.mono\temp\obj\Debug\Classicvania Test.dll
 D:\Classicvania-Test\.mono\temp\obj\Debug\Classicvania Test.pdb
+C:\Users\GALC\Documents\stuff\projects\Classicvania-Test\.mono\temp\bin\Debug\Classicvania Test.dll
+C:\Users\GALC\Documents\stuff\projects\Classicvania-Test\.mono\temp\bin\Debug\Classicvania Test.pdb
+C:\Users\GALC\Documents\stuff\projects\Classicvania-Test\.mono\temp\obj\Debug\Classicvania Test.csproj.AssemblyReference.cache
+C:\Users\GALC\Documents\stuff\projects\Classicvania-Test\.mono\temp\obj\Debug\Classicvania Test.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\GALC\Documents\stuff\projects\Classicvania-Test\.mono\temp\obj\Debug\Classicvania Test.AssemblyInfoInputs.cache
+C:\Users\GALC\Documents\stuff\projects\Classicvania-Test\.mono\temp\obj\Debug\Classicvania Test.AssemblyInfo.cs
+C:\Users\GALC\Documents\stuff\projects\Classicvania-Test\.mono\temp\obj\Debug\Classicvania Test.csproj.CoreCompileInputs.cache
+C:\Users\GALC\Documents\stuff\projects\Classicvania-Test\.mono\temp\obj\Debug\Classicvania Test.dll
+C:\Users\GALC\Documents\stuff\projects\Classicvania-Test\.mono\temp\obj\Debug\Classicvania Test.pdb
