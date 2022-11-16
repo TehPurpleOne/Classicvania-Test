@@ -8,19 +8,19 @@
     ".NETFramework,Version=v4.7.2": []
   },
   "packageFolders": {
-    "C:\\Users\\GALC\\.nuget\\packages\\": {}
+    "C:\\Users\\nineb\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\GALC\\Documents\\stuff\\projects\\Classicvania-Test\\Classicvania Test.csproj",
+      "projectUniqueName": "D:\\Classicvania-Test\\Classicvania Test.csproj",
       "projectName": "Classicvania Test",
-      "projectPath": "C:\\Users\\GALC\\Documents\\stuff\\projects\\Classicvania-Test\\Classicvania Test.csproj",
-      "packagesPath": "C:\\Users\\GALC\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\GALC\\Documents\\stuff\\projects\\Classicvania-Test\\.mono\\temp\\obj\\",
+      "projectPath": "D:\\Classicvania-Test\\Classicvania Test.csproj",
+      "packagesPath": "C:\\Users\\nineb\\.nuget\\packages\\",
+      "outputPath": "D:\\Classicvania-Test\\.mono\\temp\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\GALC\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\nineb\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net472"
@@ -43,7 +43,7 @@
     "frameworks": {
       "net472": {
         "targetAlias": "net472",
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.302\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.402\\RuntimeIdentifierGraph.json"
       }
     }
   }
