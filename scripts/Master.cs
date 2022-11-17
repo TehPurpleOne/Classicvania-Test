@@ -7,6 +7,7 @@ public class Master : Node
     // Normally I would prefer a separate global variable script, but for this example, these values can just be stored in Master.
     public int playerhp = 16; // Player's current HP
     public int lives = 3; // Remaining lives.
+    public int whipLevel = 0; // Current level of whip in use.
     public int subID = 0; // Sub-weapon ID.
     public int hearts = 0; // Remaining hearts.
     public int score = 0; // Current score.

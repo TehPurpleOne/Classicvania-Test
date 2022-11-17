@@ -339,6 +339,7 @@ shape = SubResource( 20 )
 
 [node name="hitbox" type="Area2D" parent="."]
 
+[connection signal="animation_finished" from="anim" to="." method="animDone"]
 [connection signal="body_entered" from="headCheck" to="." method="headEntered"]
 [connection signal="body_exited" from="headCheck" to="." method="headExited"]
 [connection signal="body_entered" from="blockCheck" to="." method="bodyEntered"]

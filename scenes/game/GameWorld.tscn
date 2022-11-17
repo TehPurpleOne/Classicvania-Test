@@ -48,7 +48,7 @@ layer = 3
 follow_viewport_enable = true
 
 [node name="Player" parent="object" instance=ExtResource( 4 )]
-position = Vector2( 200, 128 )
+position = Vector2( 200, 129 )
 
 [node name="Cam" type="Camera2D" parent="object/Player"]
 current = true
