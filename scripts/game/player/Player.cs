@@ -15,6 +15,7 @@ public class Player : KinematicBody2D
     private AnimationPlayer anim;
     private Area2D sideCheck;
     private CollisionShape2D footbox;
+    private CollisionShape2D whipBox;
 
     // Variables.
     private const float WALKX = 60; // How many pixels per second do we want Simon to move.
@@ -25,17 +26,17 @@ public class Player : KinematicBody2D
     private float xSpd = 0; // Base x velocity.
     private int jumpMod = 9; // Freeze the player in midair for a moment;
     private int freeze = 0; // Temporarily freezes the player for certain actions.
-    private int iFrames = 120; // Invulnerability frames for the player.
+    private int iFrames = 90; // Invulnerability frames for the player.
     private int fall = 0; // Counter used to force player to crouch after a long fall.
-    private bool wAttack = false; // Flag to show the whip sprite during an attack.
     private bool noJump = false; // Checks to see if Simon is under a 2 block high space. If so, he cannot jump.
     private bool xMove = true; // Stops X movement when a block is detected.
     private bool whpThrw = false; // True is using a whip, false if using a thrown item.
+    private string currAnim = "";
+    private string lastAnim = "";
     public List<Stairs> stairObj = new List<Stairs>();
     private Stairs SObjA = null;
     private Stairs SObjB = null;
     private Vector2 stairTarget = Vector2.Zero;
-    public bool onStairs = false;
     private Vector2 velocity = Vector2.Zero; // Player's overall speed and angle.
     public enum state {WALKIDLE, CROUCH, WALK, JUMP, FALL, WALKOFF, FINDSTAIR, STAIRS, WHIP, THROW, STUN, KNOCKBACK, DEAD};
     public state current = state.WALKIDLE;
@@ -47,6 +48,7 @@ public class Player : KinematicBody2D
         i = (InputManager)GetNode("/root/InputManager");
         w = (GameWorld)GetNode("/root/Master/GameWorld");
         footbox = (CollisionShape2D)GetChild(0);
+        whipBox = (CollisionShape2D)GetChild(7).GetChild(m.whipLevel);
         simon = (Sprite)GetChild(1);
         whip = (Sprite)GetChild(2);
         anim = (AnimationPlayer)GetChild(3);
@@ -73,6 +75,8 @@ public class Player : KinematicBody2D
         switch(current) { // Tick down the freeze timer if active.
             case state.CROUCH:
             case state.STUN:
+            case state.WHIP:
+            case state.THROW:
                 if(freeze > 0) {
                     freeze --;
                 }
@@ -80,23 +84,96 @@ public class Player : KinematicBody2D
         }
 
         switch(current) { // Check to see if the player can attack.
-
+            case state.WALKIDLE:
+            case state.CROUCH:
+            case state.WALK:
+            case state.JUMP:
+            case state.FALL:
+            case state.WALKOFF:
+            case state.STAIRS:
+                if(m.sAttack && currAnim == "idleAscend" || m.sAttack && currAnim == "idleDescend") {
+                    attackCheck();
+                } else {
+                    attackCheck();
+                }
+                break;
         }
+
+        switch(current) { // Apply gravity
+            case state.WALKIDLE:
+            case state.CROUCH:
+            case state.WALK:
+            case state.JUMP:
+            case state.FALL:
+            case state.WALKOFF:
+            case state.WHIP:
+            case state.THROW:
+            case state.KNOCKBACK:
+                if(last != state.STAIRS) {
+                    yVel();
+                }
+                break;
+        }
+
+        switch(current) { // Apply left/right movement
+            case state.WALKIDLE:
+            case state.WALK:
+            case state.JUMP:
+            case state.FALL:
+                xVel();
+                break;
+
+            case state.WHIP:
+            case state.THROW:
+                if(last != state.STAIRS) {
+                    xVel();
+                }
+                break;
+        }
+
+        if(anim.CurrentAnimation != currAnim) { // Failsafe to prevent the player from getting stuck after whipping on stairs.
+            lastAnim = currAnim;
+            currAnim = anim.CurrentAnimation;
+        }
+
+        iFrame();
 
         stateLogic();
 
+        whipAnim();
+        throwWpn();
+
         velocity = MoveAndSlide(velocity, Vector2.Up);
+        if(current == state.WALK) {
+            GlobalPosition = new Vector2((float)Math.Round(GlobalPosition.x), (float)Math.Round(GlobalPosition.y)); // Hopefully this will prevent any issues with positioning on stairs.
+        }
+        GlobalPosition = new Vector2(Mathf.Clamp(GlobalPosition.x, w.cam.LimitLeft + 8, w.cam.LimitRight - 8), GlobalPosition.y);
+        
+
+        // This is just for testing.
+        if(Input.IsActionJustPressed("hurt")) {
+            setState(state.STUN);
+        }
     }
 
     private void setDir() {
         // Orient the player and wall detector appropriately
         if(i.dirHold.x < 0 && simon.FlipH) {
-            sideCheck.Position = new Vector2(-8.5F, sideCheck.Position.y);
+            sideCheck.Position = new Vector2(-sideCheck.Position.x, sideCheck.Position.y);
+            for(int w = 0; w < 3; w++) {
+                CollisionShape2D wBoxes = (CollisionShape2D)GetChild(7).GetChild(w);
+                wBoxes.Position = new Vector2(-wBoxes.Position.x, wBoxes.Position.y);
+            }
             simon.FlipH = false;
         } else if(i.dirHold.x > 0 && !simon.FlipH) {
-            sideCheck.Position = new Vector2(8.5F, sideCheck.Position.y);
+            sideCheck.Position = new Vector2(-sideCheck.Position.x, sideCheck.Position.y);
+            for(int w = 0; w < 3; w++) {
+                CollisionShape2D wBoxes = (CollisionShape2D)GetChild(7).GetChild(w);
+                wBoxes.Position = new Vector2(-wBoxes.Position.x, wBoxes.Position.y);
+            }
             simon.FlipH = true;
         }
+        whip.FlipH = simon.FlipH;
     }
 
     private void xVel() {
@@ -104,6 +181,14 @@ public class Player : KinematicBody2D
             case state.JUMP:
             case state.FALL:
                 if(m.jumpCtrl) {
+                    setDir();
+                    xSpd = (i.dirHold.x * WALKX);
+                }
+                break;
+            
+            case state.WHIP:
+            case state.THROW:
+                if(m.jumpCtrl && !IsOnFloor()) {
                     setDir();
                     xSpd = (i.dirHold.x * WALKX);
                 }
@@ -120,7 +205,18 @@ public class Player : KinematicBody2D
     }
 
     private void yVel()  {
-        velocity.y += 25;
+        if(velocity.y < 0) {
+            jumpMod = 9;
+            velocity.y += GRAVITY;
+        }
+
+        if(velocity.y == 0 && jumpMod > 0) {
+            jumpMod--;
+        }
+
+        if(velocity.y >= 0 && jumpMod == 0) {
+            velocity.y += GRAVITY;
+        }
 
         if(velocity.y > FALLCAP) {
             fall++;
@@ -129,20 +225,19 @@ public class Player : KinematicBody2D
     }
 
     private void groundCheck() {
-        if(!IsOnFloor() && fall == 0) {
+        if(!IsOnFloor()) {
             setState(state.WALKOFF);
             velocity.y = FALLCAP;
         }
     }
 
     private void attackCheck() {
-        if(i.dirHold.y != -1 && i.bTap) { // Activate the whip.
-            setState(state.WHIP);
-        }
 
-        if(i.dirHold.y != -1 && i.bTap) { // Throw an item.
-            if(m.subID != 0) {
+        if(i.bTap && !m.sAttack || i.bTap && m.sAttack && currAnim != "idleAscend" && currAnim == "idleDescend" && current != state.STAIRS || i.bHold && m.sAttack && currAnim == "idleAscend" || i.bHold && m.sAttack && currAnim == "idleDescend") {
+            if(i.dirHold.y == -1 && m.subID != 0 && w.swCount < m.DTShot) {
                 setState(state.THROW);
+            } else {
+                setState(state.WHIP);
             }
         }
     }
@@ -173,7 +268,6 @@ public class Player : KinematicBody2D
                         
                         // At this point, the stairs are locked in, proceed to change the player's state.
                         setState(state.FINDSTAIR);
-                        onStairs = true;
                     }
                 }
             }
@@ -204,18 +298,65 @@ public class Player : KinematicBody2D
                         
                         // At this point, the stairs are locked in, proceed to change the player's state.
                         setState(state.FINDSTAIR);
-                        onStairs = true;
                     }
                 }
             }
         }
     }
 
+    private void iFrame() {
+        if(current != state.KNOCKBACK && iFrames < 90) {
+            iFrames ++;
+            if(iFrames%2 == 0) {
+                simon.Visible = !simon.Visible;
+            }
+        }
+
+        if(iFrames == 90 && !simon.Visible) {
+            simon.Show();
+        }
+    }
+
+    private void throwWpn() {
+        if(anim.CurrentAnimationPosition >= 0.16 && anim.CurrentAnimationPosition < 0.176 && whipBox.Disabled && !whpThrw && current == state.THROW) {
+            w.getWpn(GlobalPosition + (Vector2.Up * 8), simon.FlipH);
+        }
+    }
+
+    private void whipAnim() {
+        if(whpThrw && current == state.WHIP) { // Animate the show the whip.
+
+            switch(currAnim){
+                case "whipStand":
+                case "whipCrouch":
+                case "whipAscend":
+                case "whipDescend":
+                    if(simon.Frame >= 13) {
+                        whip.Frame = ((simon.Frame - 13) * 3) + m.whipLevel;
+                    }
+
+                    if(!whip.Visible && whip.Frame == ((simon.Frame - 13) * 3) + m.whipLevel) {
+                        whip.Show();
+                    }
+
+                    if(anim.CurrentAnimationPosition >= 0.256 && anim.CurrentAnimationPosition < 0.272 && whipBox.Disabled) {
+                        whipBox.Disabled = false;
+                    } else {
+                        whipBox.Disabled = true;
+                    }
+                    break;
+            }  
+        }
+
+        if(!whpThrw && whip.Visible) { // Failsafe to prevent the whip from getting stuck on screen or the infamous Critical Hit bug from the original NES game.
+            whipBox.Disabled = true;
+            whip.Hide();
+        }
+    }
+
     private void stateLogic() {
         switch(current) {
             case state.WALKIDLE: // Player isn't moving.
-                xVel(); // Apply X and Y velocity
-                yVel();
 
                 if(i.dirHold.x != 0) { // If left or right is pressed, start walking.
                     setState(state.WALK);
@@ -232,8 +373,7 @@ public class Player : KinematicBody2D
                 break;
             
             case state.WALK: // PLayer is walking
-                xVel(); // Apply X and Y velocity
-                yVel();
+
                 if(i.dirHold.x == 0) { // If left or right is pressed, start walking.
                     setState(state.WALKIDLE);
                 }
@@ -252,7 +392,6 @@ public class Player : KinematicBody2D
                 if(velocity.x != 0) {
                     velocity.x = 0;
                 }
-                yVel(); // Apply Y velocity
 
                 if(i.dirHold.y != 1 && freeze == 0) { // Crouch if down is pressed.
                     setState(state.WALKIDLE);
@@ -260,8 +399,6 @@ public class Player : KinematicBody2D
                 break;
             
             case state.JUMP: // Player jumped while on the ground.
-                xVel();
-                yVel();
 
                 if(velocity.y >= 0) {
                     setState(state.FALL);
@@ -269,9 +406,9 @@ public class Player : KinematicBody2D
                 break;
             
             case state.WALKOFF:
-                yVel();
+            case state.FALL:
                 if(IsOnFloor()) {
-                    if(fall < 7) {
+                    if(fall < 3) {
                         if(i.dirHold.x != 0) {
                             setState(state.WALK);
                         } else {
@@ -282,34 +419,6 @@ public class Player : KinematicBody2D
                         setState(state.CROUCH);
                     }
                     fall = 0;
-                    jumpMod = 9;
-                }
-                break;
-
-            case state.FALL: // Player's Y velocity is greater than 0.
-                xVel();
-
-                if(jumpMod > 0) {
-                    jumpMod--;
-                }
-                
-                if(jumpMod == 0) { // Freeze the player in the air for a few frames.
-                    yVel();
-                }
-
-                if(IsOnFloor()) {
-                    if(fall < 7) {
-                        if(i.dirHold.x != 0) {
-                            setState(state.WALK);
-                        } else {
-                            setState(state.WALKIDLE);
-                        }
-                    } else {
-                        freeze = 30;
-                        setState(state.CROUCH);
-                    }
-                    fall = 0;
-                    jumpMod = 9;
                 }
                 break;
             
@@ -327,9 +436,19 @@ public class Player : KinematicBody2D
                     // Flip the sprite one current time
                     if(SObjB.GlobalPosition.x < GlobalPosition.x) {
                         stairTarget.x = GlobalPosition.x - 8;
+                        for(int w = 0; w < 3; w++) {
+                            CollisionShape2D wBoxes = (CollisionShape2D)GetChild(7).GetChild(w);
+                            float x = Math.Abs(wBoxes.Position.x);
+                            wBoxes.Position = new Vector2(-x, wBoxes.Position.y);
+                        }
                         simon.FlipH = false;
                     } else {
                         stairTarget.x = GlobalPosition.x + 8;
+                        for(int w = 0; w < 3; w++) {
+                            CollisionShape2D wBoxes = (CollisionShape2D)GetChild(7).GetChild(w);
+                            float x = Math.Abs(wBoxes.Position.x);
+                            wBoxes.Position = new Vector2(x, wBoxes.Position.y);
+                        }
                         simon.FlipH = false;
                     }
 
@@ -351,7 +470,6 @@ public class Player : KinematicBody2D
 
                 // Check to see if the player has reached the target vector.
                 if(GlobalPosition == stairTarget) {
-                    //setState(state.STAIRIDLE);
                     // Set the appropriate idle animation.
                     if(anim.CurrentAnimation == "ascend") {
                         anim.Play("idleAscend");
@@ -371,46 +489,49 @@ public class Player : KinematicBody2D
                         SObjB = null;
                     } else {
                         // My attempt to simplify the controls.
-                        if(i.dirHold.y == -1) {
-                            up = true;
-                        }
-                        if(i.dirHold.y == 1) {
-                            down = true;
-                        }
-                        if(i.dirHold.x == -1) {
-                            // Determine which stair trigger has a lower X coordinate.
-                            if(SObjA.GlobalPosition.x < SObjB.GlobalPosition.x) {
-                                // Determine which object has a lower Y coordinate.
-                                if(SObjA.GlobalPosition.y < SObjB.GlobalPosition.y) {
-                                    up = true;
+                        if(!m.sAttack || m.sAttack && !i.bHold) {
+                            if(i.dirHold.y == -1) {
+                                up = true;
+                            }
+                            if(i.dirHold.y == 1) {
+                                down = true;
+                            }
+                            if(i.dirHold.x == -1) {
+                                // Determine which stair trigger has a lower X coordinate.
+                                if(SObjA.GlobalPosition.x < SObjB.GlobalPosition.x) {
+                                    // Determine which object has a lower Y coordinate.
+                                    if(SObjA.GlobalPosition.y < SObjB.GlobalPosition.y) {
+                                        up = true;
+                                    } else {
+                                        down = true;
+                                    }
                                 } else {
-                                    down = true;
+                                    if(SObjB.GlobalPosition.y < SObjA.GlobalPosition.y) {
+                                        up = true;
+                                    } else {
+                                        down = true;
+                                    }
                                 }
-                            } else {
-                                if(SObjB.GlobalPosition.y < SObjA.GlobalPosition.y) {
-                                    up = true;
+                            }
+                            if(i.dirHold.x == 1) {
+                                // Determine which stair trigger has a higher X coordinate.
+                                if(SObjA.GlobalPosition.x > SObjB.GlobalPosition.x) {
+                                    // Determine which object has a lower Y coordinate.
+                                    if(SObjA.GlobalPosition.y < SObjB.GlobalPosition.y) {
+                                        up = true;
+                                    } else {
+                                        down = true;
+                                    }
                                 } else {
-                                    down = true;
+                                    if(SObjB.GlobalPosition.y < SObjA.GlobalPosition.y) {
+                                        up = true;
+                                    } else {
+                                        down = true;
+                                    }
                                 }
                             }
                         }
-                        if(i.dirHold.x == 1) {
-                            // Determine which stair trigger has a higher X coordinate.
-                            if(SObjA.GlobalPosition.x > SObjB.GlobalPosition.x) {
-                                // Determine which object has a lower Y coordinate.
-                                if(SObjA.GlobalPosition.y < SObjB.GlobalPosition.y) {
-                                    up = true;
-                                } else {
-                                    down = true;
-                                }
-                            } else {
-                                if(SObjB.GlobalPosition.y < SObjA.GlobalPosition.y) {
-                                    up = true;
-                                } else {
-                                    down = true;
-                                }
-                            }
-                        }
+                        
                         // Set target vector.
                         if(up) { // Player pressed up.
                             stairTarget.y = GlobalPosition.y - 8;
@@ -456,11 +577,25 @@ public class Player : KinematicBody2D
                     }
                 } else {
                     // Orient the sprite in the correct direction and set the animation.
-                    if(stairTarget.x < GlobalPosition.x) {
+                    if(stairTarget.x < GlobalPosition.x && simon.FlipH) {
+                        sideCheck.Position = new Vector2(-8.5F, sideCheck.Position.y);
+                        for(int w = 0; w < 3; w++) {
+                            CollisionShape2D wBoxes = (CollisionShape2D)GetChild(7).GetChild(w);
+                            float x = Math.Abs(wBoxes.Position.x);
+                            wBoxes.Position = new Vector2(-x, wBoxes.Position.y);
+                        }
                         simon.FlipH = false;
-                    } else if(stairTarget.x > GlobalPosition.x) {
+                    } else if(stairTarget.x > GlobalPosition.x && !simon.FlipH) {
+                        sideCheck.Position = new Vector2(8.5F, sideCheck.Position.y);
+                        for(int w = 0; w < 3; w++) {
+                            CollisionShape2D wBoxes = (CollisionShape2D)GetChild(7).GetChild(w);
+                            float x = Math.Abs(wBoxes.Position.x);
+                            wBoxes.Position = new Vector2(x, wBoxes.Position.y);
+                        }
                         simon.FlipH = true;
                     }
+
+                    whip.FlipH = simon.FlipH;
 
                     // Assign the appropriate animation based on the target.
                     if(stairTarget.y < GlobalPosition.y && anim.CurrentAnimation != "descend") {
@@ -487,16 +622,45 @@ public class Player : KinematicBody2D
                 break;
             
             case state.WHIP:
-                switch(last) {
-                    case state.WALKIDLE:
-                    case state.CROUCH:
-                    case state.WALK:
-                    case state.JUMP:
-                    case state.FALL:
-                        yVel();
-                        break;
+            case state.THROW:
+                if(IsOnFloor()) { // Prevent from being put in a crouch state immediately following the whip state.
+                    fall = 0;
+                    velocity.x = 0;
                 }
                 break;
+            
+            case state.STUN:
+                if(velocity != Vector2.Zero) {
+                    velocity = Vector2.Zero;
+                }
+                if(freeze == 0 && last != state.STAIRS || freeze == 0 && last == state.STAIRS && m.playerhp == 0) {
+                    velocity.y = JUMP * 0.75F;
+                    setState(state.KNOCKBACK);
+                }
+                if(freeze == 0 && last == state.STAIRS && m.playerhp > 0) { // We don't want players flying off the stairs when hit. Not good for gameplay.
+                    iFrames = 0;
+                    setState(last);
+                }
+                break;
+
+            case state.KNOCKBACK:
+                switch(simon.FlipH) {
+                    case true:
+                        velocity.x = -WALKX;
+                        break;
+                    case false:
+                        velocity.x = WALKX;
+                        break;
+                }
+                if(IsOnFloor() && m.playerhp > 0) {
+                    freeze = 30;
+                    iFrames = 0;
+                    setState(state.CROUCH);
+                } else if(IsOnFloor() && m.playerhp <= 0) {
+                    setState(state.DEAD);
+                }
+                break;
+    
         }
     }
 
@@ -581,6 +745,21 @@ public class Player : KinematicBody2D
                         break;
                 }
                 break;
+            case state.STUN:
+                velocity = Vector2.Zero;
+                whpThrw = false;
+                freeze = 5;
+                anim.Stop();
+                break;
+            case state.KNOCKBACK:
+                footbox.Disabled = false;
+                fall = 0;
+                anim.Play("hurt");
+                break;
+            case state.DEAD:
+                velocity = Vector2.Zero;
+                anim.Play("dead");
+                break;
         }
         last = current;
         current = which;
@@ -606,6 +785,9 @@ public class Player : KinematicBody2D
             case "whipCrouch":
             case "whipAscend":
             case "whipDescend":
+                whpThrw = false;
+                whip.Hide();
+                anim.Play(lastAnim);
                 setState(last);
                 break;
         }
