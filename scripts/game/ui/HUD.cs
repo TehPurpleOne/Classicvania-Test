@@ -28,5 +28,14 @@ public class HUD : Node2D
     public override void _Process(float delta) {
         wpn.Frame = m.subID;
         DblTpl.Frame = m.DTShot - 1;
+
+        if(m.playerhp != pLife.Value) {
+            hpDelay ++;
+            hpDelay = Mathf.Wrap(hpDelay, 1, 5);
+
+            if(hpDelay%4 == 0) {
+                pLife.Value--;
+            }
+        }
     }
 }

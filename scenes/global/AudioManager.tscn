@@ -1,0 +1,38 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://assets/audio/sfx/10.wav" type="AudioStream" id=1]
+[ext_resource path="res://assets/audio/sfx/05.wav" type="AudioStream" id=2]
+[ext_resource path="res://assets/audio/sfx/07.wav" type="AudioStream" id=3]
+[ext_resource path="res://assets/audio/music/09 Player Miss.ogg" type="AudioStream" id=4]
+[ext_resource path="res://assets/audio/sfx/37.wav" type="AudioStream" id=5]
+[ext_resource path="res://scripts/global/AudioManager.cs" type="Script" id=6]
+[ext_resource path="res://assets/audio/sfx/30.wav" type="AudioStream" id=7]
+
+[node name="AudioManager" type="Node"]
+script = ExtResource( 6 )
+
+[node name="sfx" type="Node" parent="."]
+
+[node name="bling" type="AudioStreamPlayer" parent="sfx"]
+stream = ExtResource( 2 )
+
+[node name="footstep" type="AudioStreamPlayer" parent="sfx"]
+stream = ExtResource( 3 )
+
+[node name="whip" type="AudioStreamPlayer" parent="sfx"]
+stream = ExtResource( 1 )
+
+[node name="heart" type="AudioStreamPlayer" parent="sfx"]
+
+[node name="whipupgrade" type="AudioStreamPlayer" parent="sfx"]
+
+[node name="holywater" type="AudioStreamPlayer" parent="sfx"]
+stream = ExtResource( 7 )
+
+[node name="hurt" type="AudioStreamPlayer" parent="sfx"]
+stream = ExtResource( 5 )
+
+[node name="music" type="Node" parent="."]
+
+[node name="dead" type="AudioStreamPlayer" parent="music"]
+stream = ExtResource( 4 )

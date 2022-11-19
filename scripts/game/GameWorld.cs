@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using Array = Godot.Collections.Array;
 
-public class GameWorld : Node
+public class GameWorld : Node2D
 {
     // Required nodes.
     private Master m;
@@ -16,6 +16,7 @@ public class GameWorld : Node
     // Variables.
     private List<SubWeapons> subs = new List<SubWeapons>();
     public int swCount = 0;
+    public int deadTimer = 180;
 
     public override void _Ready() {
         m = (Master)GetNode("/root/Master");
@@ -47,6 +48,15 @@ public class GameWorld : Node
     }
     public override void _PhysicsProcess(float delta) {
         countSWs();
+
+        if(simon.current == Player.state.DEAD) {
+            deadTimer--;
+
+            if(deadTimer == 0) {
+                m.playerhp = 16;
+                GetTree().ReloadCurrentScene();
+            }
+        }
     }
 
     private void countSWs() {

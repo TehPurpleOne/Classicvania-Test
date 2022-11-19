@@ -7,6 +7,7 @@ public class Player : KinematicBody2D
 {
     // Required nodes.
     private InputManager i; // Grabs the input data.
+    private AudioManager a;
     private Master m; // Used to send data back and forth to global values.
     private GameWorld w; // Used to send/receive data from the Game World.
     private CollisionShape2D box;  // Collision box for the player's feet.
@@ -46,6 +47,7 @@ public class Player : KinematicBody2D
         // Assign nodes to their respective variables.
         m = (Master)GetNode("/root/Master");
         i = (InputManager)GetNode("/root/InputManager");
+        a = (AudioManager)GetNode("/root/AudioManager");
         w = (GameWorld)GetNode("/root/Master/GameWorld");
         footbox = (CollisionShape2D)GetChild(0);
         whipBox = (CollisionShape2D)GetChild(7).GetChild(m.whipLevel);
@@ -151,7 +153,9 @@ public class Player : KinematicBody2D
         
 
         // This is just for testing.
-        if(Input.IsActionJustPressed("hurt")) {
+        if(Input.IsActionJustPressed("hurt") && iFrames == 90) {
+            a.playSound("hurt");
+            m.playerhp -= 4;
             setState(state.STUN);
         }
     }
@@ -237,6 +241,7 @@ public class Player : KinematicBody2D
             if(i.dirHold.y == -1 && m.subID != 0 && w.swCount < m.DTShot) {
                 setState(state.THROW);
             } else {
+                a.playSound("whip");
                 setState(state.WHIP);
             }
         }
@@ -416,6 +421,7 @@ public class Player : KinematicBody2D
                         }
                     } else {
                         freeze = 30;
+                        a.playSound("footstep");
                         setState(state.CROUCH);
                     }
                     fall = 0;
@@ -657,6 +663,7 @@ public class Player : KinematicBody2D
                     iFrames = 0;
                     setState(state.CROUCH);
                 } else if(IsOnFloor() && m.playerhp <= 0) {
+                    a.playMusic("dead");
                     setState(state.DEAD);
                 }
                 break;
@@ -749,7 +756,6 @@ public class Player : KinematicBody2D
                 velocity = Vector2.Zero;
                 whpThrw = false;
                 freeze = 5;
-                anim.Stop();
                 break;
             case state.KNOCKBACK:
                 footbox.Disabled = false;

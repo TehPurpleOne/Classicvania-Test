@@ -3,7 +3,9 @@ using System;
 
 public class HolyWater : SubWeapons
 {
+    private AudioManager a;
     public override void _Ready() {
+        a = (AudioManager)GetNode("/root/AudioManager");
         w = (GameWorld)GetNode("/root/Master/GameWorld");
         simon = w.simon;
         sprite = (AnimatedSprite)GetChild(0);
@@ -38,6 +40,7 @@ public class HolyWater : SubWeapons
 
                 if(IsOnFloor()) {
                     sprite.Play("explode");
+                    a.playSound("holywater");
                     setState(state.BOOM);
                 }
 

@@ -11,7 +11,7 @@
 [ext_resource path="res://scenes/game/weapons/Cross.tscn" type="PackedScene" id=9]
 [ext_resource path="res://scenes/game/weapons/Dagger.tscn" type="PackedScene" id=10]
 
-[node name="GameWorld" type="Node"]
+[node name="GameWorld" type="Node2D"]
 script = ExtResource( 3 )
 
 [node name="back" type="CanvasLayer" parent="."]

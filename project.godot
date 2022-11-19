@@ -17,6 +17,7 @@ config/icon="res://icon.png"
 [autoload]
 
 InputManager="*res://scripts/global/InputManager.cs"
+AudioManager="*res://scenes/global/AudioManager.tscn"
 
 [debug]
 
