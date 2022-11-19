@@ -8,9 +8,9 @@ public class Master : Node
     public int playerhp = 16; // Player's current HP
     public int lives = 3; // Remaining lives.
     public int whipLevel = 0; // Current level of whip in use.
-    public int subID = 4; // Sub-weapon ID.
+    public int subID = 0; // Sub-weapon ID.
     public int hearts = 0; // Remaining hearts.
-    public int DTShot = 2; // Double or triple shots active.
+    public int DTShot = 1; // Double or triple shots active.
     public int score = 0; // Current score.
     public int stageID = 0; // Stage ID.
     public readonly List<int> stagetime = new List<int>(); // Stage time storage.
