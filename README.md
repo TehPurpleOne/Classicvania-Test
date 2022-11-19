@@ -1,6 +1,6 @@
 # Classic Castlevania Example
 
-This is a close approximation of how to do a NES styled Castlevania game. A lot of work is needed for this to become a fully fledged project, but this example is more than enough to get you going. Please give credit where credit is due.
+This is a close approximation of how to do a NES styled Castlevania game in Godot using C#. A lot of work is needed for this to become a fully fledged project, but this example is more than enough to get you going. Please give credit where credit is due.
 
 ## Controls
 Arrows - Movement
