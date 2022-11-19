@@ -4,7 +4,7 @@
 [ext_resource path="res://assets/tilesets/collision/stairs.png" type="Texture" id=2]
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 8, 8 )
+extents = Vector2( 7, 2 )
 
 [node name="StairTrigger" type="Node2D" groups=["StairTrigger"]]
 script = ExtResource( 1 )
@@ -17,6 +17,7 @@ collision_layer = 16
 collision_mask = 2
 
 [node name="box" type="CollisionShape2D" parent="plyrDetect"]
+position = Vector2( 0, 6 )
 shape = SubResource( 1 )
 
 [connection signal="body_entered" from="plyrDetect" to="." method="plyrEnter"]

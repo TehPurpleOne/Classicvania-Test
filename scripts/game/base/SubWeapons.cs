@@ -12,7 +12,7 @@ public class SubWeapons : KinematicBody2D
     public int damage = 0;
     public int ticker = 0;
     public Vector2 velocity = Vector2.Zero;
-    public enum state {INACTIVE, SETUP, THROWN, BOOM}
+    public enum state {INACTIVE, THROWN, BOOM}
     public state current = state.INACTIVE;
 
     public void setState(state which) {

@@ -33,5 +33,4 @@ public class InputManager : Node
         selectTap = Input.IsActionJustPressed("select");
         startTap = Input.IsActionJustPressed("start");
     }
-
 }

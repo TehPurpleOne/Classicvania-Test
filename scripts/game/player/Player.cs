@@ -32,6 +32,7 @@ public class Player : KinematicBody2D
     private bool noJump = false; // Checks to see if Simon is under a 2 block high space. If so, he cannot jump.
     private bool xMove = true; // Stops X movement when a block is detected.
     private bool whpThrw = false; // True is using a whip, false if using a thrown item.
+    private int lastWhip = 0;
     private string currAnim = "";
     private string lastAnim = "";
     public List<Stairs> stairObj = new List<Stairs>();
@@ -58,6 +59,11 @@ public class Player : KinematicBody2D
     }
 
     public override void _PhysicsProcess(float delta) {
+
+        if(lastWhip != m.whipLevel) { // Set the correct hitbox based on which whip is equipped.
+            whipBox = (CollisionShape2D)GetChild(7).GetChild(m.whipLevel);
+            lastWhip = m.whipLevel;
+        }
 
         switch(current) { // Check to see if the play has activated a stair object
             case state.WALKIDLE:

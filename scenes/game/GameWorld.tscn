@@ -46,9 +46,11 @@ margin_bottom = 40.0
 
 [node name="background" type="CanvasLayer" parent="."]
 layer = 2
+visible = false
 follow_viewport_enable = true
 
 [node name="tiles" type="TileMap" parent="background"]
+visible = false
 tile_set = ExtResource( 6 )
 cell_size = Vector2( 16, 16 )
 format = 1
